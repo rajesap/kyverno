@@ -16,7 +16,7 @@ metadata:
 spec:
   background: true
   #validationFailureAction: audit
-  validationFailureAction: {{ .Values.policies.restrictSeccomp.validationFailureAction }
+  validationFailureAction: {{ .Values.policies.restrictSeccomp.validationFailureAction }}
   failurePolicy: {{ .Values.policies.failurePolicy }}
   rules:
     - name: check-seccomp
