@@ -80,3 +80,54 @@ policies:
   restrictSeccomp:
     enabled: true
     validationFailureAction: audit
+  disallowHostNamespaces:
+    enabled: true
+    validationFailureAction: audit
+  disallowHostPath:
+    enabled: true
+    validationFailureAction: audit
+  disallowHostPorts:
+    enabled: true
+    validationFailureAction: audit
+  disallowHostProcess:
+    enabled: true
+    validationFailureAction: audit
+  disallowPrivilegedContainers:
+    enabled: true
+    validationFailureAction: audit
+  requireRunAsNonRootUser:
+    enabled: true
+    validationFailureAction: audit
+  requireReadOnlyRootFilesystem:
+    enabled: true
+    validationFailureAction: audit
+  requireUnprivilegedContainerPortRange:
+    enabled: true
+    validationFailureAction: audit
+  requireRequestsLimits:
+    enabled: true
+    validationFailureAction: audit
+  enforceResourcesAsRatio:
+    enabled: true
+    validationFailureAction: audit
+  enforceStrictMTLS:
+    enabled: true
+    validationFailureAction: audit
+  disallowCapabilitiesStrict:
+    enabled: true
+    validationFailureAction: audit
+  requireIstioMTLS:
+    enabled: true
+    validationFailureAction: audit
+  requirePDB:
+    enabled: true
+    validationFailureAction: audit
+  requireLabels:
+    enabled: true
+    validationFailureAction: audit
+  restrictImageRegistries:
+    enabled: false
+    validationFailureAction: audit
+  deprecatedImageRegistries:
+    enabled: false
+    validationFailureAction: audit
