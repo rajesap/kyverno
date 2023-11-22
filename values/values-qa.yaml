@@ -1,4 +1,4 @@
 kyverno:
   # kyverno is on heavy load because of deploybot
   # we need to spread the load across more replicas
-  replicaCount: 2
+  replicaCount: 4
