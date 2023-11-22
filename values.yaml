@@ -7,8 +7,6 @@ restartKyvernoPods:
 kyverno:
   replicaCount: 3
   # Service Monitor to collect Prometheus Metrics
-  serviceMonitor:
-    enabled: true
   metricsConfig:
     metricsRefreshInterval: 8h
 
