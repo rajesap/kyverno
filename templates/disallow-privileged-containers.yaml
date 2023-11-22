@@ -1,0 +1,45 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  # https://kyverno.io/policies/pod-security/baseline/disallow-privileged-containers/disallow-privileged-containers/
+  name: disallow-privileged-containers
+  annotations:
+    policies.kyverno.io/title: Disallow Privileged Containers (PSP 1.20.01)
+    policies.kyverno.io/category: SAP TOP-X
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.24"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Privileged mode disables most security mechanisms and must not be allowed. This policy
+      ensures Pods do not call for privileged mode.
+      Further information can be found at https://wiki.wdf.sap.corp/wiki/display/itsec/Kubernetes+Container+Orchestration+-+Hardening#KubernetesContainerOrchestrationHardening-1.20.01Ensureminimizetheadmissionofprivilegedcontainers.
+spec:
+  validationFailureAction: {{ .Values.policies.disallowPrivilegedContainers.validationFailureAction }}
+  background: true
+  failurePolicy: {{ .Values.policies.failurePolicy }}
+  rules:
+    - name: privileged-containers
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        all:
+          {{- include "whitelist-rule" "disallow-privileged-containers" | nindent 10 }}
+      validate:
+        message: >-
+          Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+          and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(privileged): "false"
+            =(initContainers):
+              - =(securityContext):
+                  =(privileged): "false"
+            containers:
+              - =(securityContext):
+                  =(privileged): "false"

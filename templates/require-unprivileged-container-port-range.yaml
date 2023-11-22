@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-unprivileged-container-port-range
+  annotations:
+    policies.kyverno.io/title: Require Unprivileged Container Port Range
+    policies.kyverno.io/category: Conventions
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Deployment, StatefulSet
+    policies.kyverno.io/description: >-
+      Containers may define ports on which they listen. In addition the port number they
+      require to follow a specific range. The range is 1024-65536
+spec:
+  validationFailureAction: {{ .Values.policies.requireUnprivilegedContainerPortRange.validationFAilureAction }}
+  background: true
+  failurePolicy: {{ .Values.policies.failurePolicy }}
+  rules:
+    - name: port-number
+      match:
+        any:
+        - resources:
+            kinds:
+              - Deployment
+              - StatefulSet
+      preconditions:
+        all:
+          {{- include "whitelist-rule" "disallow-privilege-escalation" | nindent 10 }}
+      validate:
+        message: container ports must be between 1024 and 65536.
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                - name: "*"
+                  =(ports):
+                  - containerPort: 1024-65536

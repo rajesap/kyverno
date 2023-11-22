@@ -1,0 +1,68 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  # https://kyverno.io/policies/pod-security/restricted/require-run-as-non-root-user/require-run-as-non-root-user/
+  name: require-run-as-non-root-user
+  annotations:
+    policies.kyverno.io/title: Require Run As Non-Root User (PSP 1.20.03)
+    policies.kyverno.io/category: SAP TOP-X
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.24"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Containers must be required to run as non-root users. This policy ensures
+      `runAsUser` is either unset or set to a number greater than zero.
+      Further information can be found at https://wiki.wdf.sap.corp/wiki/display/itsec/Kubernetes+Container+Orchestration+-+Hardening#KubernetesContainerOrchestrationHardening-1.20.03Ensureminimizetheadmissionofrootcontainers.
+spec:
+  validationFailureAction: {{ .Values.policies.requireRunAsNonRootUser.validationFailureAction }}
+  background: true
+  failurePolicy: {{ .Values.policies.failurePolicy }}
+  rules:
+    - name: run-as-non-root-user
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Running as root is not allowed. The fields spec.securityContext.runAsUser,
+          spec.containers[*].securityContext.runAsUser, spec.initContainers[*].securityContext.runAsUser,
+          and spec.ephemeralContainers[*].securityContext.runAsUser must be unset or
+          set to a number greater than zero.
+        pattern:
+          spec:
+            =(securityContext):
+              =(runAsUser): ">0"
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(runAsUser): ">0"
+            containers:
+              - =(securityContext):
+                  =(runAsUser): ">0"
+    - name: run-as-non-root-user-init-container
+      match:
+        resources:
+          kinds:
+            - Pod
+      preconditions:
+        all:
+          {{- include "whitelist-rule" "require-run-as-non-root-user" | nindent 10 }}
+          - key: {{ `{{ request.operation || 'BACKGROUND' }}` | quote }}
+            operator: NotEqual
+            value: DELETE
+      validate:
+        foreach:
+          - list: request.object.spec.initContainers[]
+            preconditions:
+              all:
+                - key: {{ `{{ element.name || '' }}` | quote }}
+                  operator: NotEquals
+                  value: "istio-init"
+            deny:
+              conditions:
+                all:
+                  - key: {{ `{{ element.securityContext.runAsUser || '1' }}` | quote }}
+                    operator: LessThan
+                    value: "1"

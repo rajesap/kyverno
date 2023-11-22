@@ -1,7 +1,5 @@
-{{- if .Values.restartKyvernoPods.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Release.Name }}-restart-kyverno-pods
   namespace: {{ .Release.Namespace }}
-{{- end }}

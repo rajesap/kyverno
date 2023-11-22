@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-istio-mtls
+  annotations:
+    policies.kyverno.io/title: SAP SEC-374 Use mTLS for secure system-to-system integration
+    policies.kyverno.io/category: SAP TOP-X
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      SAP SEC-374: Communicate reliably and securely over the network, e. g. using mTLS for secure
+      system-to-system integration. In cloud/hyperscaler environments SAP's control over the
+      network layer is limited. It is a shared resource between us and the cloud/hyperscaler provider.
+      Following the zero trust principle, we have to consider the network as an untrusted resource.
+      This means SAP Products and services running in these environments shall rely on encrypted
+      communications and strong authentication between all entities communicating over the network.
+      The use of TLS with mutual authentication (mTLS) is a good and well-established method to achieve this.
+      Further information can be found at https://wiki.wdf.sap.corp/wiki/display/PSSEC/SEC-374.
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: {{ .Values.policies.requireIstioMTLS.validationFailureAction }}
+  background: true
+  failurePolicy: {{ .Values.policies.failurePolicy }}
+  rules:
+    - name: check-for-istio-mtls
+      match:
+        resources:
+          kinds:
+            - Pod
+      preconditions:
+        all:
+          {{- include "whitelist-rule" "require-istio-mtls" | nindent 10 }}
+          # to exclude jobs and pods not controlled by replica controller
+          - key: Job
+            operator: AnyNotIn
+            value: {{ `{{ request.object.metadata.ownerReferences[0].kind }}` | quote }}
+      validate:
+        message: "The pod is not using Istio mTLS to secure traffic."
+        pattern:
+          metadata:
+            labels:
+              security.istio.io/tlsMode: "istio"
