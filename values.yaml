@@ -77,3 +77,6 @@ policies:
   disallowPrivilegeEscalation:
     enabled: true
     validationFailureAction: audit
+  restrictSeccomp:
+    enabled: true
+    validationFailureAction: audit
