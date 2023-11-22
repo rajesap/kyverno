@@ -26,9 +26,6 @@ spec:
         resources:
           kinds:
             - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "require-read-only-root-filesystem" | nindent 10 }}
       validate:
         message: >-
           Root filesystem must be read-only.

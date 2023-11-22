@@ -26,9 +26,6 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "disallow-host-ports" | nindent 10 }}
       validate:
         message: >-
           Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort

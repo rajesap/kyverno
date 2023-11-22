@@ -26,9 +26,6 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "disallow-host-path" | nindent 10 }}
       validate:
         message: >-
           HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset.

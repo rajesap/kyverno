@@ -25,9 +25,6 @@ spec:
         resources:
           kinds:
             - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "require-requests-limits" | nindent 10 }}
       validate:
         message: "CPU and memory resource requests and limits are required."
         pattern:

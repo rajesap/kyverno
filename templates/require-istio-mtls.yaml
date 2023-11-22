@@ -27,13 +27,6 @@ spec:
         resources:
           kinds:
             - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "require-istio-mtls" | nindent 10 }}
-          # to exclude jobs and pods not controlled by replica controller
-          - key: Job
-            operator: AnyNotIn
-            value: {{ `{{ request.object.metadata.ownerReferences[0].kind }}` | quote }}
       validate:
         message: "The pod is not using Istio mTLS to secure traffic."
         pattern:

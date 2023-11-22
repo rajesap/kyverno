@@ -22,9 +22,6 @@ spec:
         resources:
           kinds:
             - Deployment
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "require-pdb" | nindent 10 }}
       context:
         - name: pdb_count
           apiCall:

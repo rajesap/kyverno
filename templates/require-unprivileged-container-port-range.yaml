@@ -22,9 +22,6 @@ spec:
             kinds:
               - Deployment
               - StatefulSet
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "disallow-privilege-escalation" | nindent 10 }}
       validate:
         message: container ports must be between 1024 and 65536.
         pattern:

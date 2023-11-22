@@ -30,9 +30,6 @@ spec:
             - Job
             - HorizontalPodAutoscaler
             - Service
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "check-for-label-name" | nindent 10 }}
       validate:
         message: "The label `app.kubernetes.io/name` is required"
         pattern:
@@ -50,9 +47,6 @@ spec:
             - Job
             - HorizontalPodAutoscaler
             - Service
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "check-for-label-instance" | nindent 10 }}
       validate:
         message: "The label `app.kubernetes.io/instance`is required"
         pattern:
@@ -71,9 +65,6 @@ spec:
             - HorizontalPodAutoscaler
             - Service
             - Application
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "check-for-team-name" | nindent 10 }}
       validate:
         message: "The label `signavio.com/team`is required"
         pattern:
@@ -92,9 +83,6 @@ spec:
             - HorizontalPodAutoscaler
             - Service
             - Application
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "check-for-oncall-name" | nindent 10 }}
       validate:
         message: "The label `signavio.com/oncall`is required"
         pattern:

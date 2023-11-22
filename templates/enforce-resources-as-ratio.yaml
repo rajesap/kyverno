@@ -27,9 +27,6 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "enforce-resources-as-ratio" | nindent 10 }}
       validate:
         message: Limits may not exceed 2x the requests.
         foreach:

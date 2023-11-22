@@ -28,9 +28,6 @@ spec:
           - resources:
               kinds:
                 - PeerAuthentication
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "enforce-strict-mtls" | nindent 10 }}
       validate:
         message: "PeerAuthentication resources may only set UNSET or STRICT for the mode."
         pattern:

@@ -26,9 +26,6 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "disallow-host-process" | nindent 10 }}
       validate:
         message: >-
           HostProcess containers are disallowed. The fields spec.securityContext.windowsOptions.hostProcess,

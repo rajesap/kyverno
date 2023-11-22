@@ -25,9 +25,6 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          {{- include "whitelist-rule" "disallow-privileged-containers" | nindent 10 }}
       validate:
         message: >-
           Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
