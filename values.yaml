@@ -1,0 +1,81 @@
+global:
+  mtls:
+    enabled: false
+restartKyvernoPods:
+  enabled: true
+
+kyverno:
+  replicaCount: 3
+  # Service Monitor to collect Prometheus Metrics
+  serviceMonitor:
+    enabled: true
+  metricsConfig:
+    metricsRefreshInterval: 8h
+
+  resources:
+    requests:
+      cpu: 750m
+      memory: 1024Mi
+    limits:
+      # CPU limit must be omitted for the CFS throttling bug
+      memory: 1536Mi
+
+  webhooksCleanup:
+    enable: true
+
+  crds:
+    annotations:
+      argocd.argoproj.io/sync-options: Replace=true
+
+  grafana:
+    enabled: true
+
+policyreporter:
+  enabled: false
+  replicaCount: 2
+
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 340Mi
+      cpu: 100m
+  # Prometheus Metrics API
+  metrics:
+    enabled: true
+
+  # enable policy-report-ui
+  ui:
+    enabled: true
+    replicaCount: 2
+
+    displayMode: dark
+    plugins:
+      kyverno: true
+    resources:
+      limits:
+        memory: 100Mi
+      requests:
+        memory: 75Mi
+        cpu: 35m
+
+  kyvernoPlugin:
+    enabled: true
+    replicaCount: 2
+
+    resources:
+      limits:
+        memory: 30Mi
+      requests:
+        memory: 20Mi
+        cpu: 7m
+
+  global:
+    fullnameOverride: "policy-reporter"
+
+policies:
+  enabled: true
+  failurePolicy: Ignore
+  disallowPrivilegeEscalation:
+    enabled: true
+    validationFailureAction: audit

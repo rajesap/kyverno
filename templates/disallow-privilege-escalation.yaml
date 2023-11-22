@@ -1,0 +1,50 @@
+{{- if and .Values.policies.enabled .Values.policies.disallowPrivilegeEscalation.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  # https://kyverno.io/policies/pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation/
+  name: disallow-privilege-escalation
+  annotations:
+    policies.kyverno.io/title: Disallow Privilege Escalation (PSP 1.20.02)
+    policies.kyverno.io/category: SAP TOP-X
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.24"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+      This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
+      Further information can be found at https://wiki.wdf.sap.corp/wiki/display/itsec/Kubernetes+Container+Orchestration+-+Hardening#KubernetesContainerOrchestrationHardening-1.20.02EnsureminimizetheadmissionofcontainerswithallowPrivilegeEscalationissettotrue.
+spec:
+  validationFailureAction: {{ .Values.policies.disallowPrivilegeEscalation.validationFailureAction }}
+  background: true
+  failurePolicy: {{ .Values.policies.failurePolicy }}
+  rules:
+    - name: privilege-escalation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        all:
+          {{- include "whitelist-rule" "disallow-privilege-escalation" | nindent 10 }}
+      validate:
+        message: >-
+          Privilege escalation is disallowed. The fields
+          spec.containers[*].securityContext.allowPrivilegeEscalation,
+          spec.initContainers[*].securityContext.allowPrivilegeEscalation,
+          and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
+          must be set to `false`.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(allowPrivilegeEscalation): "false"
+            =(initContainers):
+              - =(securityContext):
+                  =(allowPrivilegeEscalation): "false"
+            containers:
+              - =(securityContext):
+                  =(allowPrivilegeEscalation): "false"
+{{- end }}

@@ -1,0 +1,17 @@
+apiVersion: v2
+name: kyverno
+description: |-
+  Add Kyverno which is Kubernetes native Policy management aganet.
+  Add Policy Reporter which watches for PolicyReport Resources.
+  Add core policies to be enforced by default with all environments.
+version: 1.0.1
+dependencies:
+  - name: kyverno
+    alias: kyverno
+    version: 2.7.2
+    repository: https://kyverno.github.io/kyverno/
+  - name: policy-reporter
+    alias: policyreporter
+    version: 2.13.5
+    repository: https://kyverno.github.io/policy-reporter
+    condition: policyreporter.enabled

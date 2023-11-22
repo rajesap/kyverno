@@ -1,0 +1,15 @@
+{{- if .Values.restartKyvernoPods.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-restart-kyverno-pods
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-restart-kyverno-pods
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-restart-kyverno-pods
+    namespace: {{ .Release.Namespace }}
+{{- end }}
