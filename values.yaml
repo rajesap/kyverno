@@ -29,7 +29,7 @@ kyverno:
     enabled: true
 
 policyreporter:
-  enabled: false
+  enabled: true
   replicaCount: 2
 
   resources:
